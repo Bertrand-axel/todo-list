@@ -90,9 +90,22 @@ services:
     networks:
       - backend
 
-# on verra plus tard
-#  frontend:
-# ...
+  react:
+    image: node:18.16
+    environment:
+      NODE_ENV: ${SERVER_ENV}
+    working_dir: /var/www/html
+    volumes:
+      - ./../react:/var/www/html
+    command: "npm run dev"
+    labels:
+      - traefik.docker.network=frontend
+      - traefik.enable=true
+      - traefik.frontend.rule=Host:${PROJECT_URL}
+      - traefik.frontend.protocol=http,https
+      - traefik.port=8080
+    networks:
+      - frontend
 
 
 volumes:
