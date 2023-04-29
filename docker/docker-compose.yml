@@ -41,11 +41,11 @@ services:
       - symfony
     volumes:
       - ./image/nginx/sites:/etc/nginx/conf.d:ro
-      - ../:/var/www/html/www
+      - ./../api/public:/var/www/html/public
     labels:
       - traefik.docker.network=frontend
       - traefik.enable=true
-      - traefik.frontend.rule=Host:${PROJECT_URL};PathPrefix:/api
+      - traefik.frontend.rule=Host:${PROJECT_URL};PathPrefix:/api,/bundles
       - traefik.frontend.protocol=http,https
       - traefik.port=80
     networks:
@@ -62,6 +62,15 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
       - ./..:/project:delegated
+    labels:
+      - traefik.enable=true
+      # routers
+      - traefik.tcp.routers.postgres.rule=HostSNI(`postgres.mpp-todolist-run.localhost`)
+      - traefik.frontend.rule=Host:postgres.mpp-todolist-run.localhost
+      - traefik.tcp.routers.postgres.entryPoints=postgres
+      - traefik.tcp.routers.postgres.service=postgres
+      # services (needed for TCP)
+      - traefik.tcp.services.postgres.loadbalancer.server.port=5432
     ports:
       - "3306:3306"
     networks:
