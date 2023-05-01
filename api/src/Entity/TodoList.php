@@ -3,31 +3,53 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\TodoListRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TodoListRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['todo_list:read']],
+    denormalizationContext: ['groups' => ['todo_list:write']],
+)]
+#[GetCollection(normalizationContext: ['groups' => ['todo_list:read']])]
+#[GetCollection(
+    uriTemplate: '/users/{ownerId}/todo_lists',
+    uriVariables: ['ownerId' => new Link(toProperty: 'owner', fromClass: User::class)],
+    normalizationContext: ['groups' => ['todo_list:read']])]
+#[Get(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']])]
+#[Post(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:create'])]
+#[Put(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:update'])]
 class TodoList
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['todo_list:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['todo_list:read'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['todo_list:read:details'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'todoLists')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['todo_list:read'])]
     private ?User $owner = null;
 
     #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class)]
+    #[Groups(['todo_list:read:details'])]
     private Collection $tasks;
 
     public function __construct()
