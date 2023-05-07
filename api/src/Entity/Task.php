@@ -3,33 +3,61 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['task:read']],
+    denormalizationContext: ['groups' => ['task:write']],
+)]
+#[GetCollection(
+    uriTemplate: '/users/{userId}/tasks',
+    uriVariables: ['userId' => new Link(toProperty: 'responsible', fromClass: User::class)],
+    normalizationContext: ['groups' => ['task:read']]),
+]
+#[GetCollection(
+    uriTemplate: '/todo_lists/{todoListId}/tasks',
+    uriVariables: ['todoListId' => new Link(toProperty: 'todoList', fromClass: TodoList::class)],
+    normalizationContext: ['groups' => ['task:read']]),
+]
+#[Get(normalizationContext: ['groups' => ['task:read', 'task:read:details']])]
+#[Post(normalizationContext: ['groups' => ['task:read', 'task:read:details']], denormalizationContext: ['task:create'])]
+#[Put(normalizationContext: ['groups' => ['task:read', 'task:read:details']], denormalizationContext: ['task:update'])]
 class Task
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['task:read', 'todo_list:read:details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['task:read', 'todo_list:read:details'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['task:read:details'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['task:read'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[Groups(['task:read'])]
     private ?User $responsible = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['task:read'])]
     private ?TodoList $todoList = null;
 
     public function getId(): ?int
