@@ -4,20 +4,20 @@ export class Container {
   private factories = new Map<string, () => Factory>;
 
   // list of services currently being generated, in order to detect circular dependencies
-  private building = new Set<string>();
+  private building: string[] = [];
 
   get<T>(name: string): T {
-    if (this.building.has(name)) {
-      throw 'circular dependency encountered';
+    if (this.building.includes(name)) {
+      throw 'circular dependency encountered : ' + JSON.stringify([...this.building, name]);
     }
 
     if (!this.services.has(name)) {
-      this.building.add(name);
+      this.building.push(name);
       this.services.set(name, this.create(name));
     }
 
     const service = this.services.get(name);
-    this.building.delete(name);
+    this.building.pop();
 
     return service;
   }

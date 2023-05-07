@@ -8,15 +8,18 @@ import {Container, Factory} from "./services/container.ts";
 import {LocalStorage} from "./services/storage.ts";
 import AuthService from "./services/auth.ts";
 import {Logger} from "./services/logger.ts";
+import {Client} from "./services/http/client.ts";
+import {CurrentUserProvider} from "./services/providers/currentUserProvider.ts";
 
 
 
 const container = new Container();
 container
-  .inject('Storage', new Factory(LocalStorage))
-  .inject( 'AuthService', new Factory(AuthService, ['Storage']))
   .inject('Logger', new Factory(Logger))
-// .inject('client', new Factory(Client, ['AuthService']))
+  .inject('Storage', new Factory(LocalStorage))
+  .inject('AuthService', new Factory(AuthService, ['Storage']))
+  .inject('Client', new Factory(Client, ['AuthService']))
+  .inject('CurrentUserProvider', new Factory(CurrentUserProvider, ['AuthService', 'Client']))
 ;
 
 container.get<Logger>('Logger').log('thers');

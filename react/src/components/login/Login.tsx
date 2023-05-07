@@ -4,14 +4,16 @@ import {useService} from "../../contexts/containerWrapper.tsx";
 import AuthService from "../../services/auth.ts";
 import {catchError, of} from "rxjs";
 import {User} from "../../interfaces/User.ts";
+import {CurrentUserProvider} from "../../services/providers/currentUserProvider.ts";
 
 function Login() {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState('');
+  const currentUserProvider = useService('CurrentUserProvider') as CurrentUserProvider;
   const authService = useService('AuthService') as AuthService;
 
   useEffect(() => {
-    const subscription = authService.me$.subscribe(setUser)
+    const subscription = currentUserProvider.user$.subscribe(setUser)
     return () => subscription.unsubscribe();
   }, [])
 

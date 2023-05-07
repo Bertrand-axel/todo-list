@@ -23,12 +23,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
     denormalizationContext: ['groups' => ['user:write']],
 )]
 #[GetCollection(normalizationContext: ['groups' => ['user:read']])]
-#[Get(normalizationContext: ['groups' => ['user:read:details']])]
+#[Get(normalizationContext: ['groups' => ['user:read', 'user:read:details']])]
 #[Get(
     uriTemplate: '/me',
     defaults: ['id' => -1],
     stateless: false,
-    normalizationContext: ['groups' => ['user:read:me']],
+    normalizationContext: ['groups' => ['user:read', 'user:read:details', 'user:read:me']],
     provider: UserMeStateProvider::class
 )]
 #[Post(controller: NotFoundAction::class, output: false, read: false)]
@@ -54,6 +54,7 @@ class User implements UserInterface
     private Collection $todoLists;
 
     #[ORM\Column(length: 1023)]
+    #[Groups(['user:read:me'])]
     private ?string $email = null;
 
     #[ORM\Column(type: 'json')]
