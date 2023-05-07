@@ -6,15 +6,12 @@ import todolistRoutes from './routes/todolist'
 import userRoutes from './routes/user'
 import Login from "./components/login/Login.tsx";
 import PrivateRoutes from "./components/routing/PrivateRoutes.tsx";
-import {useAuthData} from "./auth/AuthWrapper.tsx";
 
 
 function App() {
-  const {user} = useAuthData();
-
   return (
     <Routes>
-      {user.logged ? null : <Route path='/login' element={<Login/>}/>}
+      <Route path='/login' element={<Login/>}/>
       <Route element={<PrivateRoutes/>}>
         {taskRoutes}
         {todolistRoutes}
