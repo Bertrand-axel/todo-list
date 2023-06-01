@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Action\NotFoundAction;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -22,6 +24,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['username' => 'ipartial'])]
 #[GetCollection(normalizationContext: ['groups' => ['user:read']])]
 #[Get(normalizationContext: ['groups' => ['user:read', 'user:read:details']])]
 #[Get(
@@ -38,11 +41,11 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'task:read', 'todo_list:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'task:read', 'todo_list:read'])]
     private ?string $username = null;
 
     #[ORM\OneToMany(mappedBy: 'responsible', targetEntity: Task::class)]

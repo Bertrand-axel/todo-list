@@ -4,3 +4,6 @@ lexik_jwt_authentication:
     pass_phrase: '%env(JWT_PASSPHRASE)%'
 
     user_identity_field: email
+    
+    # shorten token duration in order to experience the logout
+    token_ttl: 600

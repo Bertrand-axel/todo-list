@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     uriVariables: ['todoListId' => new Link(toProperty: 'todoList', fromClass: TodoList::class)],
     normalizationContext: ['groups' => ['task:read']]),
 ]
+#[GetCollection(normalizationContext: ['groups' => ['task:read']]), ]
 #[Get(normalizationContext: ['groups' => ['task:read', 'task:read:details']])]
 #[Post(normalizationContext: ['groups' => ['task:read', 'task:read:details']], denormalizationContext: ['task:create'])]
 #[Put(normalizationContext: ['groups' => ['task:read', 'task:read:details']], denormalizationContext: ['task:update'])]

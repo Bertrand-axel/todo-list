@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
@@ -27,16 +28,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Get(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']])]
 #[Post(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:create'])]
 #[Put(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:update'])]
+#[Delete(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:delete'])]
 class TodoList
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['todo_list:read'])]
+    #[Groups(['todo_list:read', 'task:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['todo_list:read'])]
+    #[Groups(['todo_list:read', 'task:read'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
