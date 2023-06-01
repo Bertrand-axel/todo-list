@@ -10,6 +10,9 @@ import AuthService from "./services/auth.ts";
 import {Logger} from "./services/logger.ts";
 import {Client} from "./services/http/client.ts";
 import {CurrentUserProvider} from "./services/providers/currentUserProvider.ts";
+import {TodoListService} from "./services/providers/todoListService.ts";
+import {TaskService} from "./services/providers/taskService.ts";
+import {UserService} from "./services/providers/userService.ts";
 
 
 
@@ -20,6 +23,9 @@ container
   .inject('AuthService', new Factory(AuthService, ['Storage']))
   .inject('Client', new Factory(Client, ['AuthService']))
   .inject('CurrentUserProvider', new Factory(CurrentUserProvider, ['AuthService', 'Client']))
+  .inject('TodoListService', new Factory(TodoListService, ['Client']))
+  .inject('TaskService', new Factory(TaskService, ['Client']))
+  .inject('UserService', new Factory(UserService, ['Client']))
 ;
 
 container.get<Logger>('Logger').log('thers');
@@ -27,10 +33,8 @@ container.get<Logger>('Logger').log('thers');
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ContainerWrapper container={container}>
-        <App/>
-      </ContainerWrapper>
-    </BrowserRouter>
+    <ContainerWrapper container={container}>
+      <App/>
+    </ContainerWrapper>
   </React.StrictMode>,
 )

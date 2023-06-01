@@ -10,6 +10,10 @@ export class CurrentUserProvider {
   private _user$: BehaviorSubject<User | null>;
   user$: Observable<User | null>;
 
+  get current(): User | null {
+    return this._user$.value;
+  }
+
   constructor(private readonly authService: AuthService, private client: Client) {
 
     this._user$ = new BehaviorSubject<User | null>(null);

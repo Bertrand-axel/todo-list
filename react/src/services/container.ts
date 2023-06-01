@@ -12,14 +12,15 @@ export class Container {
     }
 
     if (!this.services.has(name)) {
+      if (!this.factories.has(name)) {
+        throw 'service not defined : ' + name;
+      }
       this.building.push(name);
       this.services.set(name, this.create(name));
+      this.building.pop();
     }
 
-    const service = this.services.get(name);
-    this.building.pop();
-
-    return service;
+    return this.services.get(name);
   }
 
   private create<T>(name: string): T {
