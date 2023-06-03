@@ -26,9 +26,27 @@ use Symfony\Component\Serializer\Annotation\Groups;
     uriVariables: ['ownerId' => new Link(toProperty: 'owner', fromClass: User::class)],
     normalizationContext: ['groups' => ['todo_list:read']])]
 #[Get(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']])]
-#[Post(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:create'])]
-#[Put(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:update'])]
-#[Delete(normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']], denormalizationContext: ['todo_list:delete'])]
+#[Post(
+    normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']],
+    denormalizationContext: ['todo_list:create'],
+    // cant create a list for someone else
+    securityMessage: 'You can\'t create a list for an other user',
+    securityPostDenormalize: "object.getOwner() == user",
+)]
+#[Put(
+    normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']],
+    denormalizationContext: ['todo_list:update'],
+    // only owner of the list can edit
+    security: "object.getOwner() == user",
+    securityMessage: 'You are not allowed to edit someone else\'s task',
+)]
+#[Delete(
+    normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']],
+    denormalizationContext: ['todo_list:delete'],
+    // only owner of the list can delete
+    security: "object.getOwner() == user",
+    securityMessage: 'You are not allowed to delete someone else\'s task',
+)]
 class TodoList
 {
     #[ORM\Id]

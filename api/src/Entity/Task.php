@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
@@ -21,17 +22,36 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[GetCollection(
     uriTemplate: '/users/{userId}/tasks',
     uriVariables: ['userId' => new Link(toProperty: 'responsible', fromClass: User::class)],
-    normalizationContext: ['groups' => ['task:read']]),
-]
+    normalizationContext: ['groups' => ['task:read']],
+)]
 #[GetCollection(
     uriTemplate: '/todo_lists/{todoListId}/tasks',
     uriVariables: ['todoListId' => new Link(toProperty: 'todoList', fromClass: TodoList::class)],
-    normalizationContext: ['groups' => ['task:read']]),
-]
+    normalizationContext: ['groups' => ['task:read']],
+)]
 #[GetCollection(normalizationContext: ['groups' => ['task:read']]), ]
 #[Get(normalizationContext: ['groups' => ['task:read', 'task:read:details']])]
-#[Post(normalizationContext: ['groups' => ['task:read', 'task:read:details']], denormalizationContext: ['task:create'])]
-#[Put(normalizationContext: ['groups' => ['task:read', 'task:read:details']], denormalizationContext: ['task:update'])]
+#[Post(
+    normalizationContext: ['groups' => ['task:read', 'task:read:details']],
+    denormalizationContext: ['task:create'],
+    // cant create a task for someone else
+    securityMessage: 'You can\'t create a task for an other user',
+    securityPostDenormalize: 'object.getResponsible() == user',
+)]
+#[Put(
+    normalizationContext: ['groups' => ['task:read', 'task:read:details']],
+    denormalizationContext: ['task:update'],
+    // only owner of the task or of the associated list can edit
+    security: 'object.getResponsible() == user or object.getTodoList().getOwner() == user',
+    securityMessage: 'You are not allowed to edit someone else\'s task',
+)]
+#[Delete(
+    normalizationContext: ['groups' => ['task:read', 'task:read:details']],
+    denormalizationContext: ['task:delete'],
+    // only owner of the task or of the associated list can edit
+    security: 'object.getResponsible() == user or object.getTodoList().getOwner() == user',
+    securityMessage: 'You are not allowed to delete someone else\'s task',
+)]
 class Task
 {
     #[ORM\Id]
