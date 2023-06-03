@@ -45,7 +45,6 @@ export function AutocompleteInput<T extends unknown>({
       if (currentValue !== null && currentValue !== undefined && !options.some((option) => equality(option, currentValue))) {
         options = [currentValue, ...options];
       }
-      console.log('seto', options);
       setOptions(options);
     })
   }

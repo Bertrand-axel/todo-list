@@ -7,7 +7,7 @@ interface Params {
   control: Control<unknown, any>,
 }
 
-export function SelectInput({label, children, control, defaultValue, name}: Params) {
+export function SelectInput({label, children, control, name}: Params) {
 
   return <FormControl sx={{ m: 1, minWidth: 120 }}>
     <InputLabel id="demo-simple-select-helper-label">{label}</InputLabel>
@@ -17,8 +17,6 @@ export function SelectInput({label, children, control, defaultValue, name}: Para
         return <Select
           {...field}
           label={label}
-          defaultValue={defaultValue}
-          // onChange={(event, value) => onChange(value)}
         >
           {children}
         </Select>;
@@ -28,7 +26,4 @@ export function SelectInput({label, children, control, defaultValue, name}: Para
     />
 
   </FormControl>
-    ;
-
-  return
 }
