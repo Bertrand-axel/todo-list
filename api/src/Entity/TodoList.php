@@ -30,22 +30,22 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']],
     denormalizationContext: ['todo_list:create'],
     // cant create a list for someone else
-    securityMessage: 'You can\'t create a list for an other user',
-    securityPostDenormalize: "object.getOwner() == user",
+    securityPostDenormalize: "object.getOwner() == null or object.getOwner() == user", // if owner is null, will be filled during pre-persist
+    securityPostDenormalizeMessage: 'You can\'t create a list for an other user',
 )]
 #[Put(
     normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']],
     denormalizationContext: ['todo_list:update'],
     // only owner of the list can edit
     security: "object.getOwner() == user",
-    securityMessage: 'You are not allowed to edit someone else\'s task',
+    securityMessage: 'You are not allowed to edit someone else\'s list',
 )]
 #[Delete(
     normalizationContext: ['groups' => ['todo_list:read', 'todo_list:read:details']],
     denormalizationContext: ['todo_list:delete'],
     // only owner of the list can delete
     security: "object.getOwner() == user",
-    securityMessage: 'You are not allowed to delete someone else\'s task',
+    securityMessage: 'You are not allowed to delete someone else\'s list',
 )]
 class TodoList
 {
@@ -68,7 +68,7 @@ class TodoList
     #[Groups(['todo_list:read'])]
     private ?User $owner = null;
 
-    #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class)]
+    #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, cascade: ['remove'])]
     #[Groups(['todo_list:read:details'])]
     private Collection $tasks;
 

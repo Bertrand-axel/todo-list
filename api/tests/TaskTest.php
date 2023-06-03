@@ -84,7 +84,8 @@ class TaskTest extends BaseApiTestCase
             'status' => Status::DOING->value,
         ]]);
 
-        $this->assertResponseStatusCodeSame(422);
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You can\'t create a task on a list you don\'t own']);
     }
 
     public function testCreateListForMyself(): void
@@ -146,8 +147,8 @@ class TaskTest extends BaseApiTestCase
             'responsible' => '/api/users/2',
         ]]);
 
-        $this->assertResponseStatusCodeSame(500);
-        $this->assertJsonContains(['message' => 'You can\'t create a task on a list you don\'t own']);
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You can\'t create a task on a list you don\'t own']);
     }
 
     public function testCreateAsIDontOwnList(): void
@@ -160,8 +161,8 @@ class TaskTest extends BaseApiTestCase
             'responsible' => '/api/users/1',
         ]]);
 
-        $this->assertResponseStatusCodeSame(500);
-        $this->assertJsonContains(['message' => 'You can\'t create a task on a list you don\'t own']);
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You can\'t create a task on a list you don\'t own']);
     }
 
     public function testUpdateTask(): void
@@ -218,8 +219,42 @@ class TaskTest extends BaseApiTestCase
         $this->login();
         $response = $this->request('PUT', '/api/tasks/3', ['json' => ['title' => 'test again']]);
 
-        $this->assertResponseStatusCodeSame(500);
-        $this->assertJsonContains(['message' => 'You are not allowed to edit someone else\'s task']);
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You are not allowed to edit someone else\'s task']);
+    }
+
+    public function testDeleteTask(): void
+    {
+        $this->login();
+        $response = $this->request('DELETE', '/api/tasks/1');
+
+        $this->assertResponseIsSuccessful();
+
+        $response = $this->request('GET', '/api/tasks/1');
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testDeleteTaskFromSomeoneElseOnListIOwn(): void
+    {
+        $this->login();
+        $response = $this->request('DELETE', '/api/tasks/2');
+
+        $this->assertResponseIsSuccessful();
+
+        $response = $this->request('GET', '/api/tasks/2');
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testDeleteTaskFromSomeoneElseOnListIDontOwn(): void
+    {
+        $this->login();
+        $response = $this->request('DELETE', '/api/tasks/3');
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You are not allowed to delete someone else\'s task']);
+
+        $response = $this->request('GET', '/api/tasks/2');
+        $this->assertResponseIsSuccessful();
     }
 
 }

@@ -25,7 +25,7 @@ class LoginTest extends BaseApiTestCase
 
     public function testLoginWhileLogged(): void
     {
-        $this->login();
+        $this->login('luffy@op.com');
         $response = $this->request('POST', '/api/login_check', ['json' => ['email' => 'zoro@op.com']]);
 
         $this->assertResponseStatusCodeSame(200);

@@ -108,8 +108,8 @@ class TodoListTest extends BaseApiTestCase
             'owner' => '/api/users/2',
         ]]);
 
-        $this->assertResponseStatusCodeSame(500);
-        $this->assertJsonContains(['message' => 'You can\'t create a list for an other user']);
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You can\'t create a list for an other user']);
     }
 
     public function testCreateListWithNonExistingUser(): void
@@ -147,6 +147,38 @@ class TodoListTest extends BaseApiTestCase
             'description' => 'new test description',
             'owner' => ['@id' => '/api/users/1'],
         ]);
+    }
+
+    public function testUpdateListIDontOwn(): void
+    {
+        $this->login();
+        $response = $this->request('PUT', '/api/todo_lists/2', ['json' => ['title' => 'new test title again',]]);
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You are not allowed to edit someone else\'s list']);
+    }
+
+    public function testDeleteList(): void
+    {
+        $this->login();
+        $response = $this->request('DELETE', '/api/todo_lists/1');
+
+        $this->assertResponseIsSuccessful();
+
+        $response = $this->request('GET', '/api/todo_lists/1');
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testDeleteListFromSomeoneElse(): void
+    {
+        $this->login();
+        $response = $this->request('DELETE', '/api/todo_lists/2');
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertJsonContains(['hydra:description' => 'You are not allowed to delete someone else\'s list']);
+
+        $response = $this->request('GET', '/api/todo_lists/1');
+        $this->assertResponseIsSuccessful();
     }
 
 }

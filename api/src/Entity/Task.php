@@ -37,8 +37,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['task:read', 'task:read:details']],
     denormalizationContext: ['task:create'],
     // cant create a task for someone else
-    securityMessage: 'You can\'t create a task for an other user',
-    securityPostDenormalize: 'object.getResponsible() == user',
+    securityPostDenormalize: 'object.getTodoList()?.getOwner() == user',
+    securityPostDenormalizeMessage: 'You can\'t create a task on a list you don\'t own',
 )]
 #[Put(
     normalizationContext: ['groups' => ['task:read', 'task:read:details']],
