@@ -8,10 +8,12 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Enums\Status;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource(
@@ -42,6 +44,7 @@ class Task
 
     #[ORM\Column(length: 255)]
     #[Groups(['task:read', 'todo_list:read:details'])]
+    #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -50,6 +53,7 @@ class Task
 
     #[ORM\Column(length: 255)]
     #[Groups(['task:read'])]
+    #[Assert\Choice(callback: [Status::class, 'values'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
@@ -59,6 +63,7 @@ class Task
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['task:read'])]
+    #[Assert\NotBlank]
     private ?TodoList $todoList = null;
 
     public function getId(): ?int
