@@ -1,8 +1,9 @@
 import {ApiResource} from "../../utils/types.ts";
-import {map, Observable} from "rxjs";
+import {map, Observable, tap} from "rxjs";
 import {Client} from "../http/client.ts";
 import {ENTRYPOINT} from "../../config/entrypoint.ts";
 import {PagedCollection} from "../../interfaces/Collection.ts";
+import {ToastStack} from "../toastStack.ts";
 
 interface SearchParams {
   page ?: string,
@@ -14,27 +15,61 @@ export abstract class ResourceService<T extends ApiResource> {
   abstract path: string;
   basePath = ENTRYPOINT;
 
-  constructor(protected readonly client: Client){}
+  constructor(protected readonly client: Client, protected readonly toastStack: ToastStack){}
 
   getCollection(params: SearchParams = {}): Observable<PagedCollection<T>> {
-    return this.client.get(`${ENTRYPOINT}${this.path}`, {params: params}).pipe(map(result => result.data));
+    return this.client
+      .get(`${ENTRYPOINT}${this.path}`, {params: params})
+      .pipe(
+        tap({error: (error) => this.handleError(error)}),
+        map(result => result.data)
+      );
   }
 
   get(id: number): Observable<T> {
-    return this.client.get(`${ENTRYPOINT}${this.path}/${id}`).pipe(map(result => result.data));
+    return this.client
+      .get(`${ENTRYPOINT}${this.path}/${id}`)
+      .pipe(
+        tap({error: (error) => this.handleError(error)}),
+        map(result => result.data)
+      );
   }
 
   save(resource: T): Observable<T> {
     const data = this.transformRelations(resource);
     if (data["@id"]) {
-      return this.client.put(`${ENTRYPOINT}${this.path}/${data.id}`, data).pipe(map(result => result.data));
+      return this.client
+        .put(`${ENTRYPOINT}${this.path}/${data.id}`, data)
+        .pipe(
+          tap({
+            error: (error) => this.handleError(error),
+            complete: () => this.handleUpdateSuccess(),
+          }),
+          map(result => result.data)
+        );
     }
 
-    return this.client.post(`${ENTRYPOINT}${this.path}`, data).pipe(map(result => result.data));
+    return this.client
+      .post(`${ENTRYPOINT}${this.path}`, data)
+      .pipe(
+        tap({
+          error: (error) => this.handleError(error),
+          complete: () => this.handleCreationSuccess(),
+        }),
+        map(result => result.data)
+      );
   }
 
   delete(resource: T): Observable<boolean> {
-    return this.client.delete(`${ENTRYPOINT}${this.path}/${resource.id}`).pipe(map(() => true));
+    return this.client
+      .delete(`${ENTRYPOINT}${this.path}/${resource.id}`)
+      .pipe(
+        tap({
+          error: (error) => this.handleError(error),
+          complete: () => this.handleDeleteSuccess(),
+        }),
+        map(() => true)
+      );
   }
 
   private transformRelations(resource: object) {
@@ -52,5 +87,22 @@ export abstract class ResourceService<T extends ApiResource> {
     }
 
     return data;
+  }
+
+  private handleError(error: any) {
+    const message: string = error?.response?.data?.['hydra:description'] || 'An error occurred';
+    this.toastStack.push({content: message, type: 'error'});
+  }
+
+  private handleDeleteSuccess() {
+    this.toastStack.push({content: 'document deleted', type: 'success'});
+  }
+
+  private handleCreationSuccess() {
+    this.toastStack.push({content: 'document created', type: 'success'});
+  }
+
+  private handleUpdateSuccess() {
+    this.toastStack.push({content: 'document updated', type: 'success'});
   }
 }
