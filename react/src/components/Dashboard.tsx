@@ -82,18 +82,6 @@ function DashboardContent() {
               pr: '24px', // keep right padding when drawer closed
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && {display: 'none'}),
-              }}
-            >
-              <MenuIcon/>
-            </IconButton>
             <Typography
               component="h1"
               variant="h6"
@@ -114,9 +102,6 @@ function DashboardContent() {
               px: [1],
             }}
           >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon/>
-            </IconButton>
           </Toolbar>
           <Divider/>
           <TodoListList/>

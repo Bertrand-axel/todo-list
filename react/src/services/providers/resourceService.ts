@@ -6,7 +6,7 @@ import {PagedCollection} from "../../interfaces/Collection.ts";
 import {ToastStack} from "../toastStack.ts";
 
 interface SearchParams {
-  page ?: string,
+  page ?: number,
   pageSize ?: number,
   [key: string] : any,
 }

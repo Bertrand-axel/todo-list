@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[GetCollection(
     uriTemplate: '/todo_lists/{todoListId}/tasks',
     uriVariables: ['todoListId' => new Link(toProperty: 'todoList', fromClass: TodoList::class)],
+    order: ['title' => 'ASC'],
     normalizationContext: ['groups' => ['task:read']],
 )]
 #[GetCollection(normalizationContext: ['groups' => ['task:read']]), ]

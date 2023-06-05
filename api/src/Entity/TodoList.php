@@ -20,6 +20,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['todo_list:read']],
     denormalizationContext: ['groups' => ['todo_list:write']],
+    order: ['title' => 'ASC'],
+    paginationItemsPerPage: 10,
 )]
 #[GetCollection(normalizationContext: ['groups' => ['todo_list:read']])]
 #[GetCollection(
