@@ -165,6 +165,44 @@ class TaskTest extends BaseApiTestCase
         $this->assertJsonContains(['hydra:description' => 'You can\'t create a task on a list you don\'t own']);
     }
 
+    public function testCreateWithNoTitleIsImpossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/tasks', ['json' => [
+            'todoList' => '/api/todo_lists/1',
+            'status' => Status::DOING->value,
+            'responsible' => '/api/users/1',
+        ]]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
+    public function testCreateWithBlankTitleIsImpossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/tasks', ['json' => [
+            'todoList' => '/api/todo_lists/1',
+            'title' => '',
+            'status' => Status::DOING->value,
+            'responsible' => '/api/users/1',
+        ]]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
+    public function testCreateWithUnknownStatusIsImpossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/tasks', ['json' => [
+            'todoList' => '/api/todo_lists/1',
+            'title' => 'some task with bas status',
+            'status' => 'NON_EXISTING_STATUS',
+            'responsible' => '/api/users/1',
+        ]]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
     public function testUpdateTask(): void
     {
         $this->login();

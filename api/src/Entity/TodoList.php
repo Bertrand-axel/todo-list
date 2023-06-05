@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TodoListRepository::class)]
 #[ApiResource(
@@ -55,7 +56,8 @@ class TodoList
     #[Groups(['todo_list:read', 'task:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank]
     #[Groups(['todo_list:read', 'task:read'])]
     private ?string $title = null;
 
@@ -69,7 +71,7 @@ class TodoList
     private ?User $owner = null;
 
     #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, cascade: ['remove'])]
-    #[Groups(['todo_list:read:details'])]
+    #[Groups(['todo_list:read:with_tasks'])]
     private Collection $tasks;
 
     public function __construct()

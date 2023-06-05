@@ -124,6 +124,48 @@ class TodoListTest extends BaseApiTestCase
         $this->assertResponseStatusCodeSame(400);
     }
 
+    public function testCreateWithEmptyDescriptionIsPossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/todo_lists', ['json' => [
+            'title' => 'no description list',
+        ]]);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testCreateWithBlankDescriptionIsPossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/todo_lists', ['json' => [
+            'title' => 'blank description list',
+            'description' => ''
+        ]]);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testCreateWithBlankTitleIsImpossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/todo_lists', ['json' => [
+            'title' => '',
+            'description' => 'blank title list'
+        ]]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
+    public function testCreateWithNoTitleIsImpossible(): void
+    {
+        $this->login();
+        $response = $this->request('POST', '/api/todo_lists', ['json' => [
+            'description' => 'no title list'
+        ]]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
     public function testUpdateList(): void
     {
         $this->login();
