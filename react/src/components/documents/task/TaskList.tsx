@@ -16,10 +16,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {Loading} from "../../utils/Loading.tsx";
+import Pagination from "../../Pagination.tsx";
 
 export function TaskList() {
   const [loading, setLoading] = useState(true);
   const [lists, setLists] = useState<PagedCollection<Task>>({'@id': '/api/tasks'});
+  const [page, setPage] = useState(0);
   const {listId}: {listId: string} = useParams();
 
   const id = parseInt(listId, 10);
@@ -43,6 +45,17 @@ export function TaskList() {
   }
 
   const items = lists["hydra:member"] || [];
+
+  function onPageChange(event, page: number) {
+    setLoading(true);
+    taskService.getForList(id, {page: page + 1}).subscribe(collection => {
+      setLoading(false);
+      setLists(collection);
+      setPage(page);
+    });
+  }
+
+  const total = lists['hydra:totalItems'] ?? 0;
 
   return <Loading loading={loading}>
     <Table size="small">
@@ -71,5 +84,6 @@ export function TaskList() {
         ))}
       </TableBody>
     </Table>
+    <Pagination onPageChange={onPageChange}  total={total} page={page} />
   </Loading>
 }
