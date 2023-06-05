@@ -45,3 +45,9 @@ rbash: ## use bash inside the react container
 
 install-fixtures:
 	docker compose exec symfony bin/console doctrine:fixtures:load --no-interaction
+
+test:
+	docker compose exec symfony bin/console --env=test doctrine:schema:drop --force
+	docker compose exec symfony bin/console --env=test doctrine:schema:create
+	docker compose exec symfony bin/console --env=test doctrine:fixtures:load --no-interaction
+	docker compose exec symfony php bin/phpunit

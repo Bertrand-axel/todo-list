@@ -11,7 +11,7 @@ class TodoListFixtures extends Fixture implements DependentFixtureInterface
 {
     protected static $lists = [
         ['title' => 'one piece', 'description' => 'a manga that is way too long', 'owner' => 'user_luffy'],
-        ['title' => 'hidden list', 'description' => null, 'owner' => 'user_luffy'],
+        ['title' => 'hidden list', 'description' => null, 'owner' => 'user_zoro'],
     ];
 
 
