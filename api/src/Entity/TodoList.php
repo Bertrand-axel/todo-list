@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -50,6 +52,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     security: "object.getOwner() == user",
     securityMessage: 'You are not allowed to delete someone else\'s list',
 )]
+#[ApiFilter(filterClass: SearchFilter::class, properties: ['title' => 'ipartial'])]
 class TodoList
 {
     #[ORM\Id]

@@ -10,10 +10,11 @@ import List from "@mui/material/List";
 import {Link} from "react-router-dom";
 import {Loading} from "../../utils/Loading.tsx";
 import Pagination from "../../Pagination.tsx";
+import TextField from "@mui/material/TextField";
 
 
 export function TodoListList() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [collection, setCollection] = useState<PagedCollection<TodoList>>({'@id': '/api/todo_lists'});
   const [page, setPage] = useState(0);
@@ -22,22 +23,36 @@ export function TodoListList() {
   useEffect(
     () => {
       setLoading(true);
-      const subscription = todoListService.getCollection({search}).subscribe(collection => {
+      const subscription = todoListService.getCollection({title: search}).subscribe(collection => {
         setLoading(false);
         setCollection(collection);
       });
       return () => subscription.unsubscribe();
     },
-    [search]
+    []
   );
 
-  function onPageChange(event, page: number) {
+  function launchSearch(params: { [key: string]: any }) {
     setLoading(true);
-    todoListService.getCollection({page: page + 1}).subscribe(collection => {
+    const targetPage = params.hasOwnProperty('page') ? params.page : page
+    const request = {
+      page: targetPage + 1,
+      title: params.hasOwnProperty('title') ? params.title : search,
+    }
+    todoListService.getCollection(request).subscribe(collection => {
       setLoading(false);
       setCollection(collection);
-      setPage(page);
+      setPage(targetPage);
+      setSearch(request.title);
     });
+  }
+
+  function onPageChange(event, page: number) {
+    launchSearch({page});
+  }
+
+  function onSearchChange(search: string) {
+    launchSearch({title: search, page: 0});
   }
 
   const total = collection['hydra:totalItems'] ?? 0;
@@ -49,15 +64,26 @@ export function TodoListList() {
     </ListItemButton>
   </Link>);
 
-  return <Loading loading={loading}>
-    <List component="nav">
-      <Link key='create' to={'lists/create'}>
-        <ListItemButton>
-          <ListItemText primary='Add'/>
-        </ListItemButton>
-      </Link>
-      {buttons}
-    </List>
-    <Pagination onPageChange={onPageChange} itemsPerPage={10} total={total} page={page} />
-  </Loading>
+  return <>
+    <Link key='create' to={'lists/create'}>
+      <ListItemButton>
+        <ListItemText primary='Add'/>
+      </ListItemButton>
+    </Link>
+    <TextField
+      variant="filled"
+      id="outlined-controlled"
+      label="Search list"
+      value={search}
+      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+        onSearchChange(event.target.value);
+      }}
+    />
+    <Loading loading={loading}>
+      <List component="nav">
+        {buttons}
+      </List>
+      <Pagination onPageChange={onPageChange} itemsPerPage={10} total={total} page={page}/>
+    </Loading>
+  </>
 }
