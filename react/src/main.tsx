@@ -13,6 +13,7 @@ import {CurrentUserProvider} from "./services/providers/currentUserProvider.ts";
 import {TodoListService} from "./services/providers/todoListService.ts";
 import {TaskService} from "./services/providers/taskService.ts";
 import {UserService} from "./services/providers/userService.ts";
+import {ToastStack} from "./services/toastStack.ts";
 
 
 
@@ -23,9 +24,10 @@ container
   .inject('AuthService', new Factory(AuthService, ['Storage']))
   .inject('Client', new Factory(Client, ['AuthService']))
   .inject('CurrentUserProvider', new Factory(CurrentUserProvider, ['AuthService', 'Client']))
-  .inject('TodoListService', new Factory(TodoListService, ['Client']))
-  .inject('TaskService', new Factory(TaskService, ['Client']))
-  .inject('UserService', new Factory(UserService, ['Client']))
+  .inject('TodoListService', new Factory(TodoListService, ['Client', 'ToastStack']))
+  .inject('TaskService', new Factory(TaskService, ['Client', 'ToastStack']))
+  .inject('UserService', new Factory(UserService, ['Client', 'ToastStack']))
+  .inject('ToastStack', new Factory(ToastStack))
 ;
 
 container.get<Logger>('Logger').log('thers');

@@ -11,7 +11,7 @@ interface Params {
 
 export function SelectStatusInput({label, control, name}: Params) {
 
-  return <SelectInput name={name} control={control} label={label} defaultValue='WAITING'>
+  return <SelectInput name={name} control={control} label={label} >
     <MenuItem value='WAITING'>Waiting</MenuItem>
     <MenuItem value='DOING'>Doing</MenuItem>
     <MenuItem value='DONE'>Done</MenuItem>

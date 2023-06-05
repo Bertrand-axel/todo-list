@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -14,11 +16,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TodoListRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['todo_list:read']],
     denormalizationContext: ['groups' => ['todo_list:write']],
+    order: ['title' => 'ASC'],
+    paginationItemsPerPage: 10,
 )]
 #[GetCollection(normalizationContext: ['groups' => ['todo_list:read']])]
 #[GetCollection(
@@ -47,6 +52,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     security: "object.getOwner() == user",
     securityMessage: 'You are not allowed to delete someone else\'s list',
 )]
+#[ApiFilter(filterClass: SearchFilter::class, properties: ['title' => 'ipartial'])]
 class TodoList
 {
     #[ORM\Id]
@@ -55,7 +61,8 @@ class TodoList
     #[Groups(['todo_list:read', 'task:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank]
     #[Groups(['todo_list:read', 'task:read'])]
     private ?string $title = null;
 
@@ -69,7 +76,7 @@ class TodoList
     private ?User $owner = null;
 
     #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, cascade: ['remove'])]
-    #[Groups(['todo_list:read:details'])]
+    #[Groups(['todo_list:read:with_tasks'])]
     private Collection $tasks;
 
     public function __construct()

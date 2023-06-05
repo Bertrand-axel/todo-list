@@ -9,6 +9,7 @@ import {TodoListDetails} from "./components/documents/todolist/TodoListDetails.t
 import {TaskDetails} from "./components/documents/task/TaskDetails.tsx";
 import {TodoListFormWrapper} from "./components/documents/todolist/TodoListFormWrapper.tsx";
 import {TaskFormWrapper} from "./components/documents/task/TaskFormWrapper.tsx";
+import {Notifier} from "./components/Notifier.tsx";
 
 function App() {
 
@@ -35,7 +36,10 @@ function App() {
     )
   );
 
-  return <RouterProvider router={router}/>
+  return <>
+    <Notifier />
+    <RouterProvider router={router}/>
+  </>
 }
 
 export default App

@@ -47,7 +47,6 @@ export function TaskForm({data}: Params) {
           <TodoListSelectInput label='list' name='todoList' control={control} getValues={getValues} />
           <TextField label='the title' {...register('title')} />
           <TextField multiline label='the description' {...register('description')} />
-          <TextField label='status' {...register('status')} />
           <SelectStatusInput label='status' name='status' control={control} />
           <UserSelectInput label='responsible' name='responsible' control={control} getValues={getValues} />
         </Stack>
