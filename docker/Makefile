@@ -8,7 +8,7 @@ export
 help: ## Outputs this help screen
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
-init: ## first command to run, will create networks, docker images, run composer/npm, etc.
+init: ## creates networks, docker images, run composer/npm, etc.
 	echo "Génération du projet ${DOCKER_PROJECT}"
 	git config core.hooksPath .githooks/
 
