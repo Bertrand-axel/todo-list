@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import {BrowserRouter} from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 import {ContainerWrapper} from "./contexts/containerWrapper.tsx";
@@ -14,7 +13,7 @@ import {TodoListService} from "./services/providers/todoListService.ts";
 import {TaskService} from "./services/providers/taskService.ts";
 import {UserService} from "./services/providers/userService.ts";
 import {ToastStack} from "./services/toastStack.ts";
-
+import {Broadcast} from "./services/broadcast.ts";
 
 
 const container = new Container();
@@ -24,14 +23,12 @@ container
   .inject('AuthService', new Factory(AuthService, ['Storage']))
   .inject('Client', new Factory(Client, ['AuthService']))
   .inject('CurrentUserProvider', new Factory(CurrentUserProvider, ['AuthService', 'Client']))
-  .inject('TodoListService', new Factory(TodoListService, ['Client', 'ToastStack']))
+  .inject('TodoListService', new Factory(TodoListService, ['Client', 'ToastStack', 'Broadcast']))
   .inject('TaskService', new Factory(TaskService, ['Client', 'ToastStack']))
   .inject('UserService', new Factory(UserService, ['Client', 'ToastStack']))
   .inject('ToastStack', new Factory(ToastStack))
+  .inject('Broadcast', new Factory(Broadcast))
 ;
-
-container.get<Logger>('Logger').log('thers');
-
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

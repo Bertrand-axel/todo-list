@@ -8,7 +8,7 @@ import {ENTRYPOINT} from "../../config/entrypoint.ts";
 export class TaskService extends ResourceService<Task> {
   path: string = 'tasks';
 
-  getForList(id: number, params: Object = {}): Observable<PagedCollection<Task>> {
+  getForList(id: number, params: SearchParams = {}): Observable<PagedCollection<Task>> {
     return this.client.get(`${ENTRYPOINT}todo_lists/${id}/tasks`, {params: params}).pipe(map(result => result.data));
   }
 }

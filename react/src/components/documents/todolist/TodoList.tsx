@@ -11,6 +11,7 @@ import {Link} from "react-router-dom";
 import {Loading} from "../../utils/Loading.tsx";
 import Pagination from "../../Pagination.tsx";
 import TextField from "@mui/material/TextField";
+import {Broadcast, Event} from "../../../services/broadcast.ts";
 
 
 export function TodoListList() {
@@ -19,6 +20,7 @@ export function TodoListList() {
   const [collection, setCollection] = useState<PagedCollection<TodoList>>({'@id': '/api/todo_lists'});
   const [page, setPage] = useState(0);
   const todoListService: TodoListService = useService('TodoListService') as TodoListService;
+  const broadcast: Broadcast = useService('Broadcast') as Broadcast;
 
   useEffect(
     () => {
@@ -27,7 +29,14 @@ export function TodoListList() {
         setLoading(false);
         setCollection(collection);
       });
-      return () => subscription.unsubscribe();
+
+      const eventNames = ['list.deleted', 'list.created', 'list.updated']
+      const subscriptionDeletion = broadcast.subscribe((event: Event) => eventNames.includes(event.name) && launchSearch({}))
+
+      return () => {
+        subscription.unsubscribe();
+        subscriptionDeletion.unsubscribe();
+      }
     },
     []
   );

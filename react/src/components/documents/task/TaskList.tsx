@@ -52,7 +52,7 @@ export function TaskList() {
       order: order,
       title: params.hasOwnProperty('title') ? params.title : search,
     }
-    taskService.getCollection(request).subscribe(collection => {
+    taskService.getForList(id, request).subscribe(collection => {
       setLoading(false);
       setLists(collection);
       setPage(targetPage);

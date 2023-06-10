@@ -89,20 +89,20 @@ export abstract class ResourceService<T extends ApiResource> {
     return data;
   }
 
-  private handleError(error: any) {
+  protected handleError(error: any) {
     const message: string = error?.response?.data?.['hydra:description'] || 'An error occurred';
     this.toastStack.push({content: message, type: 'error'});
   }
 
-  private handleDeleteSuccess() {
+  protected handleDeleteSuccess() {
     this.toastStack.push({content: 'document deleted', type: 'success'});
   }
 
-  private handleCreationSuccess() {
+  protected handleCreationSuccess() {
     this.toastStack.push({content: 'document created', type: 'success'});
   }
 
-  private handleUpdateSuccess() {
+  protected handleUpdateSuccess() {
     this.toastStack.push({content: 'document updated', type: 'success'});
   }
 }
