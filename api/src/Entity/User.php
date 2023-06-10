@@ -48,10 +48,12 @@ class User implements UserInterface
     #[Groups(['user:read', 'task:read', 'todo_list:read'])]
     private ?string $username = null;
 
+    /** @var Collection<int, Task> */
     #[ORM\OneToMany(mappedBy: 'responsible', targetEntity: Task::class)]
     #[Groups(['user:read:details'])]
     private Collection $tasks;
 
+    /** @var Collection<int, TodoList> */
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: TodoList::class, orphanRemoval: true)]
     #[Groups(['user:read:details'])]
     private Collection $todoLists;
@@ -60,6 +62,7 @@ class User implements UserInterface
     #[Groups(['user:read:me'])]
     private ?string $email = null;
 
+    /** @var string[] */
     #[ORM\Column(type: 'json')]
     #[Groups(['user:read:me'])]
     private array $roles = [];
@@ -159,11 +162,17 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRoles(): array
     {
         return $this->roles;
     }
 
+    /**
+     * @param string[] $roles
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -171,7 +180,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // nothing to do here
     }

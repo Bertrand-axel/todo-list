@@ -23,6 +23,8 @@ abstract class BaseApiTestCase extends ApiTestCase
     }
 
     /**
+     * @param array<mixed> $options
+     *
      * @throws TransportExceptionInterface
      */
     public function request(string $method, string $url, array $options = []): ResponseInterface

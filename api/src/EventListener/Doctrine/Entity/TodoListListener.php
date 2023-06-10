@@ -3,6 +3,7 @@
 namespace App\EventListener\Doctrine\Entity;
 
 use App\Entity\TodoList;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -21,6 +22,8 @@ class TodoListListener
             return;
         }
 
-        $list->setOwner($this->security->getUser());
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $list->setOwner($user);
     }
 }

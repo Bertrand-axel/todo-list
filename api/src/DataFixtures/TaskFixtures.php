@@ -10,6 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class TaskFixtures extends Fixture implements DependentFixtureInterface
 {
+    /** @var array<array{title: string, description: ?string, list: string, responsible: string, status: string}> */
     protected static array $tasks = [
         ['title' => 'find the one piece', 'description' => 'well, find the one piece', 'list' => 'list_one piece', 'responsible' => 'user_luffy', 'status' => Status::WAITING->value],
         ['title' => 'become the best swordsman', 'description' => null, 'list' => 'list_one piece', 'responsible' => 'user_zoro', 'status' => Status::DOING->value],

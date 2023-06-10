@@ -8,6 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class UserFixtures extends Fixture
 {
+    /** @var array<array{username: string, email: string}> */
     protected static array $users = [
         ['username' => 'luffy', 'email' => 'luffy@op.com'],
         ['username' => 'zoro', 'email' => 'zoro@op.com'],

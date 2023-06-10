@@ -75,6 +75,7 @@ class TodoList
     #[Groups(['todo_list:read'])]
     private ?User $owner = null;
 
+    /** @var Collection<int, Task> */
     #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, cascade: ['remove'])]
     #[Groups(['todo_list:read:with_tasks'])]
     private Collection $tasks;
