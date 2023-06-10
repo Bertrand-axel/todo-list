@@ -19,7 +19,8 @@ export class Client {
 
     this.axios.interceptors.response.use(null, response => {
       const status = response?.response?.status;
-      if (status === 401 && response.response?.data?.message === 'Expired JWT Token' && (new URL(response.config.url)).host === HOST_NAME) {
+      const jwtErrors = ['Expired JWT Token', 'Invalid JWT Token'];
+      if (status === 401 && jwtErrors.includes(response.response?.data?.message) && (new URL(response.config.url)).host === HOST_NAME) {
         this.authService.logout()
       }
 

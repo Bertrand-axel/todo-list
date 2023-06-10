@@ -11,6 +11,8 @@ help: ## Outputs this help screen
 init: ## creates networks, docker images, run composer/npm, etc.
 	echo "Génération du projet ${DOCKER_PROJECT}"
 	git config core.hooksPath .githooks/
+	(cd ../api && docker run -it --rm -v `pwd`:/usr/src/app thecodingmachine/php:8.2-v4-cli composer install)
+	(cd ../react && docker run -it --rm -v `pwd`:/usr/src/app -w /usr/src/app node:18.16 npm ci)
 
 SUBNET_FRONTEND_EXISTS=$(shell docker network list | grep frontend | wc -l)
 SUBNET_BACKEND_EXISTS=$(shell docker network list | grep backend | wc -l)
@@ -24,6 +26,7 @@ ifeq ($(SUBNET_BACKEND_EXISTS), 0)
 endif
 
 first-install: clean init build start install-fixtures ## first time running the project ? This should do the trick
+	docker compose exec symfony php bin/console lexik:jwt:generate-keypair
 	echo "installation finished";
 
 clean:
