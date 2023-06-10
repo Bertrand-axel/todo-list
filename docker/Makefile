@@ -23,8 +23,8 @@ ifeq ($(SUBNET_BACKEND_EXISTS), 0)
 	docker network create backend
 endif
 
-first-install: init build start install-fixtures ## first time running the project ? This should do the trick
-	exit 0;
+first-install: clean init build start install-fixtures ## first time running the project ? This should do the trick
+	echo "installation finished";
 
 clean:
 	docker compose down --remove-orphans
