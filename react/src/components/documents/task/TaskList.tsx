@@ -74,7 +74,7 @@ export function TaskList() {
   }
 
   function deleteTask(task: Task) {
-    taskService.delete(task).subscribe();
+    taskService.delete(task).subscribe(() => launchSearch({}));
   }
 
   const items = lists["hydra:member"] || [];
