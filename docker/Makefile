@@ -10,6 +10,7 @@ help: ## Outputs this help screen
 
 init: ## first command to run, will create networks, docker images, run composer/npm, etc.
 	echo "Génération du projet ${DOCKER_PROJECT}"
+	git config core.hooksPath .githooks/
 
 SUBNET_FRONTEND_EXISTS=$(shell docker network list | grep frontend | wc -l)
 SUBNET_BACKEND_EXISTS=$(shell docker network list | grep backend | wc -l)
@@ -21,6 +22,9 @@ endif
 ifeq ($(SUBNET_BACKEND_EXISTS), 0)
 	docker network create backend
 endif
+
+first-install: init build start install-fixtures ## first time running the project ? This should do the trick
+	exit 0;
 
 clean:
 	docker compose down --remove-orphans
@@ -44,6 +48,8 @@ rbash: ## use bash inside the react container
 	docker compose exec -ti react bash
 
 install-fixtures:
+	docker compose exec symfony bin/console doctrine:schema:drop --force
+	docker compose exec symfony bin/console doctrine:schema:create
 	docker compose exec symfony bin/console doctrine:fixtures:load --no-interaction
 
 test:
